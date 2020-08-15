@@ -14,6 +14,7 @@
 
 import inspect
 import os
+import subprocess
 import warnings
 from argparse import ArgumentParser, Namespace
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
@@ -1324,6 +1325,21 @@ class Trainer(
         # if torch.distributed.is_initialized():
         #     print('destroy in test', self.global_rank, os.getpid())
         #     torch.distributed.destroy_process_group()
+
+        if self.global_rank == 0:
+            for proc in self.interactive_ddp_procs:
+                subprocess.Popen.kill(proc)
+
+            # clean up dist group
+        if (self.use_ddp or self.use_ddp2):
+            print('destroy on rank ', self.global_rank, os.getpid())
+            torch_distrib.destroy_process_group()
+
+            # clear mem
+        if self.on_gpu:
+            model = self.get_model()
+            model.cpu()
+            torch.cuda.empty_cache()
 
         return results
 
