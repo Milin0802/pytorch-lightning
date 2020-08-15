@@ -1322,18 +1322,14 @@ class Trainer(
 
         self.teardown('test')
 
-        # if torch.distributed.is_initialized():
-        #     print('destroy in test', self.global_rank, os.getpid())
-        #     torch.distributed.destroy_process_group()
+        # clean up dist group
+        if torch_distrib.is_available() and torch_distrib.is_initialized():
+            print('destroy on rank ', self.global_rank, os.getpid())
+            torch_distrib.destroy_process_group()
 
         if self.global_rank == 0:
             for proc in self.interactive_ddp_procs:
                 subprocess.Popen.kill(proc)
-
-            # clean up dist group
-        # if (self.use_ddp or self.use_ddp2):
-        #     print('destroy on rank ', self.global_rank, os.getpid())
-        #     torch_distrib.destroy_process_group()
 
             # clear mem
         if self.on_gpu:
