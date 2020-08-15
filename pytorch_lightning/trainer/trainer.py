@@ -1302,10 +1302,10 @@ class Trainer(
         # --------------------
         self.verbose_test = verbose
 
-        assert self.global_rank != 0, 'test called on rank > 0'
-        if self.global_rank != 0:
-            # do nothing, rank 0 process will launch new processes for testing
-            return
+        # assert self.global_rank != 0, 'test called on rank > 0'
+        # if self.global_rank != 0:
+        #     # do nothing, rank 0 process will launch new processes for testing
+        #     return
 
         # If you supply a datamodule you can't supply train_dataloader or val_dataloaders
         if test_dataloaders and datamodule:
