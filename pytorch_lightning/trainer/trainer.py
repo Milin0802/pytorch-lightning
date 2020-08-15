@@ -1323,12 +1323,12 @@ class Trainer(
 
         self.teardown('test')
 
-        # clean up dist group
-        if torch_distrib.is_available() and torch_distrib.is_initialized():
-            print('destroy on rank ', self.global_rank, os.getpid())
-            torch_distrib.destroy_process_group()
-
         if self.global_rank == 0:
+            # clean up dist group
+            if torch_distrib.is_available() and torch_distrib.is_initialized():
+                print('destroy on rank ', self.global_rank, os.getpid())
+                torch_distrib.destroy_process_group()
+
             for proc in self.interactive_ddp_procs:
                 subprocess.Popen.kill(proc)
 
